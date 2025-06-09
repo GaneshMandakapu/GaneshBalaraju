@@ -183,10 +183,10 @@ export const experiences = [
   /* {
     id: 0,
     img: "https://firebasestorage.googleapis.com/v0/b/flexi-coding.appspot.com/o/flipr.jpeg?alt=media&token=1d72532a-45eb-4c1a-a81a-c9bed9fec543",
-    role: "DevOps & Fullstack Engineering Intern",
-    company: "Flipr Inovations Pvt. Ltd.",
-    date: "Aug 2023 - July 2023",
-    desc: "Working on Flipr Platforms, managing DevOps, and streamlining the process with automation.",
+    role: "IOS Developer",
+    company: "Cognizant",
+    date: "Aug 2021 - April 2023",
+    desc: "Working on Dunkin Donuts Platforms, managing application, and streamlining the user experience ",
     skills: [
       "Docker",
       "Terraform",
@@ -204,10 +204,10 @@ export const experiences = [
   {
     id: 0,
     img: "https://firebasestorage.googleapis.com/v0/b/flexi-coding.appspot.com/o/neurobit.jpeg?alt=media&token=1cacbb7b-e5ea-4efb-9b3d-f5a31b9564ad",
-    role: "Frontend Engineer Intern",
-    company: "Neurobit",
-    date: "June 2023 - Present",
-    desc: "Working on the frontend of the web application using ReactJS, Redux, and Material UI.",
+    role: "Research Assistant - Digital Health Coordinator",
+    company: "Otto-von-Guericke University, Magdeburg",
+    date: "September 2023 - December 2024",
+    desc: "Working on the User Experience (UX) design and development for digital health applications.",
     skills: [
       "ReactJS",
       "Redux",
@@ -222,9 +222,9 @@ export const experiences = [
   {
     id: 1,
     img: "https://firebasestorage.googleapis.com/v0/b/flexi-coding.appspot.com/o/flipr.jpeg?alt=media&token=1d72532a-45eb-4c1a-a81a-c9bed9fec543",
-    role: "Fullstack Externship",
-    company: "Flipr",
-    date: "June 2023 - July 2023",
+    role: "Working Student - IT Infrastructure and Process Automation",
+    company: "FSteinbeis University",
+    date: "December 2024 - Present",
     desc: "Built an employee management full stack web app used Docker and deployed on AWS ec2. I was the top performer in the program.",
     skills: [
       "ReactJS",
@@ -290,10 +290,10 @@ export const education = [
     img: "https://velammal.edu.in/wp-content/uploads/2021/09/footer-logo.jpg",
     school: "Otto -von-Guericke University, Magdeburg",
     
-    date: "July 2019 - July 2022",
-    grade: "8.2 CGPA",
-    desc: "Completed my Bachelor's degree in Mechanical Engineering at Velammal Engineering College, Chennai.",
-    degree: "Bachelor of Engineering - B.E Mechanical Engineering",
+    date: "April 2023 - Present",
+    grade: "2.2 on German Scale",
+    desc: "Ongoing Master's degree in Computer Science at Otto-von-Guericke University, Magdeburg, Germany. The program focuses on advanced topics in computer science, including software engineering, artificial intelligence, and data science.",
+    degree: "Master of Science, Computer Science",
   },
   {
     id: 1,
