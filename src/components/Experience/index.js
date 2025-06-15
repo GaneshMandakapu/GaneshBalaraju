@@ -1,4 +1,3 @@
-
 import React from 'react'
 import styled from 'styled-components'
 import Timeline from '@mui/lab/Timeline';
@@ -9,6 +8,7 @@ import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import ExperienceCard from '../Cards/ExperienceCard';
 import { experiences } from '../../data/constants';
+import { GaneshBalaraju } from '../../data/constants';
 
 const Container = styled.div`
     display: flex;
@@ -85,7 +85,7 @@ const index = () => {
                 <TimelineSection>
                     <Timeline>
                         {experiences.map((experience, index) => (
-                            <TimelineItem>
+                            <TimelineItem key={index}>
                                 <TimelineSeparator>
                                     <TimelineDot variant="outlined" color="secondary" />
                                     {index !== experiences.length - 1 && <TimelineConnector style={{ background: '#854CE6' }} />}
@@ -96,7 +96,24 @@ const index = () => {
                             </TimelineItem>
                         ))}
                     </Timeline>
+                </TimelineSection>
 
+                {/* Add your GaneshBalaraju timeline here */}
+                <Title style={{ marginTop: 40 }}>My Journey</Title>
+                <TimelineSection>
+                    <Timeline>
+                        {GaneshBalaraju.map((item, idx) => (
+                            <TimelineItem key={item.year}>
+                                <TimelineSeparator>
+                                    <TimelineDot color="primary" />
+                                    {idx !== GaneshBalaraju.length - 1 && <TimelineConnector style={{ background: '#854CE6' }} />}
+                                </TimelineSeparator>
+                                <TimelineContent sx={{ py: '12px', px: 2 }}>
+                                    <strong>{item.year}</strong>: {item.text}
+                                </TimelineContent>
+                            </TimelineItem>
+                        ))}
+                    </Timeline>
                 </TimelineSection>
             </Wrapper>
         </Container>
