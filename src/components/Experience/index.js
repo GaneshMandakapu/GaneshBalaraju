@@ -72,51 +72,85 @@ const TimelineSection = styled.div`
     gap: 12px;
 `;
 
+const HorizontalTimeline = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 48px;
+  width: 100%;
+  overflow-x: auto;
+`;
 
+const TimelineStep = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+`;
+
+const TimelineDotBus = styled.div`
+  width: 28px;
+  height: 28px;
+  background: #854CE6;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 16px;
+`;
+
+const TimelineLine = styled.div`
+  height: 4px;
+  background: #854CE6;
+  flex: 1;
+  margin: 0 4px;
+`;
 
 const index = () => {
-    // Combine both arrays, sorted by year if needed
-    const combinedTimeline = [
-        ...experiences.map(e => ({ ...e, type: 'experience' })),
-        ...GaneshBalaraju.map(j => ({ ...j, type: 'journey' })),
-    ].sort((a, b) => {
-        // Sort by year if both have year, otherwise keep experiences first
-        if (a.year && b.year) return a.year - b.year;
-        if (a.year) return -1;
-        if (b.year) return 1;
-        return 0;
-    });
-
+    // Only use experiences for the vertical timeline
     return (
         <Container id="experience">
             <Wrapper>
-                <Title>Experience & My Journey</Title>
+                <Title>Experience</Title>
                 <TimelineSection>
                     <Timeline>
-                        {combinedTimeline.map((item, idx) => (
+                        {experiences.map((item, idx) => (
                             <TimelineItem key={item.year || item.id || idx}>
                                 <TimelineSeparator>
                                     <TimelineDot
-                                        variant={item.type === 'experience' ? "outlined" : "filled"}
-                                        color={item.type === 'experience' ? "secondary" : "primary"}
+                                        variant="outlined"
+                                        color="secondary"
                                     />
-                                    {idx !== combinedTimeline.length - 1 && (
+                                    {idx !== experiences.length - 1 && (
                                         <TimelineConnector style={{ background: '#854CE6' }} />
                                     )}
                                 </TimelineSeparator>
                                 <TimelineContent sx={{ py: '12px', px: 2 }}>
-                                    {item.type === 'experience' ? (
-                                        <ExperienceCard experience={item} />
-                                    ) : (
-                                        <div>
-                                            <strong>{item.year}</strong>: {item.text}
-                                        </div>
-                                    )}
+                                    <ExperienceCard experience={item} />
                                 </TimelineContent>
                             </TimelineItem>
                         ))}
                     </Timeline>
                 </TimelineSection>
+
+                {/* Horizontal "bus" timeline at the bottom */}
+                <Title style={{ marginTop: 48, fontSize: 28 }}>My Journey</Title>
+                <HorizontalTimeline>
+                  {GaneshBalaraju.map((item, idx) => (
+                    <React.Fragment key={item.year}>
+                      <TimelineStep>
+                        <TimelineDotBus>{idx + 1}</TimelineDotBus>
+                        <div style={{ fontWeight: 600, fontSize: 16 }}>{item.year}</div>
+                        <div style={{ fontSize: 14, color: "#888", textAlign: "center", marginTop: 4 }}>{item.text}</div>
+                      </TimelineStep>
+                      {idx !== GaneshBalaraju.length - 1 && <TimelineLine />}
+                    </React.Fragment>
+                  ))}
+                </HorizontalTimeline>
             </Wrapper>
         </Container>
     )
