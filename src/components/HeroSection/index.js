@@ -2,7 +2,7 @@ import React from 'react'
 import HeroBgAnimation from '../HeroBgAnimation'
 //Img, SocialMediaIcons, SocialMediaIcon,
 import { HeroContainer, HeroBg, HeroLeftContainer, HeroRightContainer, HeroInnerContainer, TextLoop, Title, Span, SubTitle, ResumeButton } from './HeroStyle'
-import HeroImg from '../../images/GaneshBalaraju.jpg'
+import HeroImg from '../../images/HeroImage.jpeg'
 import Typewriter from 'typewriter-effect';
 import { Bio } from '../../data/constants';
 
