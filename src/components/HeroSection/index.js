@@ -1,11 +1,20 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import HeroBgAnimation from '../HeroBgAnimation'
-//Img, SocialMediaIcons, SocialMediaIcon,
 import { HeroContainer, HeroBg, HeroLeftContainer, HeroRightContainer, HeroInnerContainer, TextLoop, Title, Span, SubTitle, ResumeButton } from './HeroStyle'
 import Typewriter from 'typewriter-effect';
 import { Bio } from '../../data/constants';
 
 const HeroSection = () => {
+    const [visitorCount, setVisitorCount] = useState(null);
+
+    useEffect(() => {
+        // Use CountAPI (https://countapi.xyz/) for free visitor counting
+        fetch('https://api.countapi.xyz/hit/ganeshbalaraju.vercel.app/visits')
+            .then(res => res.json())
+            .then(data => setVisitorCount(data.value))
+            .catch(() => setVisitorCount('N/A'));
+    }, []);
+
     return (
         <div id="about">
             <HeroContainer>
@@ -29,6 +38,11 @@ const HeroSection = () => {
                         </TextLoop>
                         <SubTitle>{Bio.description}</SubTitle>
                         <ResumeButton href={Bio.resume} target='display'>Check Resume</ResumeButton>
+                        {visitorCount !== null && (
+                            <div style={{ marginTop: '16px', color: '#888', fontSize: '1rem' }}>
+                                Visitor Count: {visitorCount}
+                            </div>
+                        )}
                     </HeroLeftContainer>
 
                     <HeroRightContainer id="Right">
