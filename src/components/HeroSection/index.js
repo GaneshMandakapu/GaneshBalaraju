@@ -38,11 +38,10 @@ const HeroSection = () => {
                         </TextLoop>
                         <SubTitle>{Bio.description}</SubTitle>
                         <ResumeButton href={Bio.resume} target='display'>Check Resume</ResumeButton>
-                        {visitorCount !== null && (
-                            <div style={{ marginTop: '16px', color: '#888', fontSize: '1rem' }}>
-                                Visitor Count: {visitorCount}
-                            </div>
-                        )}
+                        {/* CounterAPI visitor count */}
+                        <div style={{ marginTop: '16px', color: '#888', fontSize: '1rem' }}>
+                            <div className="counterapi" style={{ minHeight: '44px' }}></div>
+                        </div>
                     </HeroLeftContainer>
 
                     <HeroRightContainer id="Right">
