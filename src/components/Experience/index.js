@@ -75,41 +75,43 @@ const TimelineSection = styled.div`
 
 
 const index = () => {
+    // Combine both arrays, sorted by year if needed
+    const combinedTimeline = [
+        ...experiences.map(e => ({ ...e, type: 'experience' })),
+        ...GaneshBalaraju.map(j => ({ ...j, type: 'journey' })),
+    ].sort((a, b) => {
+        // Sort by year if both have year, otherwise keep experiences first
+        if (a.year && b.year) return a.year - b.year;
+        if (a.year) return -1;
+        if (b.year) return 1;
+        return 0;
+    });
+
     return (
         <Container id="experience">
             <Wrapper>
-                {/* <Title>Experience</Title>
-                <Desc>
-                    My work experience as a software engineer and working on different companies and projects.
-                </Desc> */}
+                <Title>Experience & My Journey</Title>
                 <TimelineSection>
                     <Timeline>
-                        {experiences.map((experience, index) => (
-                            <TimelineItem key={index}>
+                        {combinedTimeline.map((item, idx) => (
+                            <TimelineItem key={item.year || item.id || idx}>
                                 <TimelineSeparator>
-                                    <TimelineDot variant="outlined" color="secondary" />
-                                    {index !== experiences.length - 1 && <TimelineConnector style={{ background: '#854CE6' }} />}
+                                    <TimelineDot
+                                        variant={item.type === 'experience' ? "outlined" : "filled"}
+                                        color={item.type === 'experience' ? "secondary" : "primary"}
+                                    />
+                                    {idx !== combinedTimeline.length - 1 && (
+                                        <TimelineConnector style={{ background: '#854CE6' }} />
+                                    )}
                                 </TimelineSeparator>
                                 <TimelineContent sx={{ py: '12px', px: 2 }}>
-                                    <ExperienceCard experience={experience} />
-                                </TimelineContent>
-                            </TimelineItem>
-                        ))}
-                    </Timeline>
-                </TimelineSection>
-
-                {/* Add your GaneshBalaraju timeline here */}
-                <Title style={{ marginTop: 40 }}>My Journey</Title>
-                <TimelineSection>
-                    <Timeline>
-                        {GaneshBalaraju.map((item, idx) => (
-                            <TimelineItem key={item.year}>
-                                <TimelineSeparator>
-                                    <TimelineDot color="primary" />
-                                    {idx !== GaneshBalaraju.length - 1 && <TimelineConnector style={{ background: '#854CE6' }} />}
-                                </TimelineSeparator>
-                                <TimelineContent sx={{ py: '12px', px: 2 }}>
-                                    <strong>{item.year}</strong>: {item.text}
+                                    {item.type === 'experience' ? (
+                                        <ExperienceCard experience={item} />
+                                    ) : (
+                                        <div>
+                                            <strong>{item.year}</strong>: {item.text}
+                                        </div>
+                                    )}
                                 </TimelineContent>
                             </TimelineItem>
                         ))}
