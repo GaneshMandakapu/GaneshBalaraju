@@ -1,20 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import HeroBgAnimation from '../HeroBgAnimation'
 import { HeroContainer, HeroBg, HeroLeftContainer, HeroRightContainer, HeroInnerContainer, TextLoop, Title, Span, SubTitle, ResumeButton } from './HeroStyle'
 import Typewriter from 'typewriter-effect';
 import { Bio } from '../../data/constants';
 
 const HeroSection = () => {
-    const [visitorCount, setVisitorCount] = useState(null);
-
-    useEffect(() => {
-        // Use CountAPI (https://countapi.xyz/) for free visitor counting
-        fetch('https://api.countapi.xyz/hit/ganeshbalaraju.vercel.app/visits')
-            .then(res => res.json())
-            .then(data => setVisitorCount(data.value))
-            .catch(() => setVisitorCount('N/A'));
-    }, []);
-
     return (
         <div id="about">
             <HeroContainer>
@@ -52,7 +42,6 @@ const HeroSection = () => {
                         />
                     </HeroRightContainer>
                 </HeroInnerContainer>
-
             </HeroContainer>
         </div>
     )
