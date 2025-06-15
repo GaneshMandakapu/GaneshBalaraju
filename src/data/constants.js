@@ -8,9 +8,9 @@ export const Bio = {
   ],
   description:
     "A motivated Master's student in Digital Engineering with hands-on experience in full-stack web development, AI-driven solutions, and native iOS application development. Eager to leverage skills in Python, Swift, and modern web frameworks to tackle challenging problems and deliver high-quality results.",
-  github: "https://github.com/ganeshbalaraju",
+  github: "https://github.com/GaneshMandakapu",
   resume:
-    "[Link to your public CV PDF]", // Update this with the URL to your resume
+    "https://drive.google.com/file/d/1uSXoIRlSnAHBHWHdF69gvG_OOjx4LuAN/view?usp=sharing", // Update this with the URL to your resume
   linkedin: "https://www.linkedin.com/in/ganeshbalaraju/",
 };
 
@@ -288,10 +288,10 @@ export const projects = [
     webapp: "[Link to live app]", // Update this with the live app link
   },
 ];
-export const TimeLineData = [
-  { year: 2017, text: "Started my journey" },
-  { year: 2018, text: "Worked as a freelance developer" },
-  { year: 2019, text: "Founded JavaScript Mastery" },
-  { year: 2020, text: "Shared my projects with the world" },
-  { year: 2021, text: "Started my own platform" },
+export const GaneshBalaraju = [
+  { year: 2021, text: "Started my journey" },
+  { year: 2022, text: "Worked as a IOS developer" },
+  { year: 2023, text: "Started Masters Program" },
+  { year: 2024, text: "Worked as UI UX Designer and Developer" },
+  { year: 2025, text: "Became a Full Stack Developer" },
 ];
