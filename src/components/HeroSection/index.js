@@ -3,6 +3,23 @@ import HeroBgAnimation from '../HeroBgAnimation'
 import { HeroContainer, HeroBg, HeroLeftContainer, HeroRightContainer, HeroInnerContainer, TextLoop, Title, Span, SubTitle, ResumeButton } from './HeroStyle'
 import Typewriter from 'typewriter-effect';
 import { Bio } from '../../data/constants';
+import styled from 'styled-components';
+
+const HeroImage = styled.img`
+  width: 100%;
+  max-width: 220px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+
+  @media (max-width: 768px) {
+    max-width: 140px;
+    border-radius: 12px;
+  }
+  @media (max-width: 480px) {
+    max-width: 100px;
+    border-radius: 8px;
+  }
+`;
 
 const HeroSection = () => {
     return (
@@ -35,10 +52,9 @@ const HeroSection = () => {
                     </HeroLeftContainer>
 
                     <HeroRightContainer id="Right">
-                        <img 
+                        <HeroImage 
                             src="/HeroImage.jpeg" 
-                            alt="hero" 
-                            style={{ width: '100%', maxWidth: '350px', borderRadius: '16px', boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }} 
+                            alt="hero"
                         />
                     </HeroRightContainer>
                 </HeroInnerContainer>
