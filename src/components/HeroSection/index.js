@@ -5,6 +5,7 @@ import Typewriter from 'typewriter-effect';
 import { Bio } from '../../data/constants';
 import styled from 'styled-components';
 import { motion } from "framer-motion";
+import Hero3DBackground from './Hero3DBackground';
 
 const HeroImage = styled.img`
   width: 100%;
@@ -33,7 +34,7 @@ const HeroSection = () => {
         <div id="about">
             <HeroContainer>
                 <HeroBg>
-                    <HeroBgAnimation />
+                    <Hero3DBackground />
                 </HeroBg>
                 <HeroInnerContainer >
                     <HeroLeftContainer id="Left">
