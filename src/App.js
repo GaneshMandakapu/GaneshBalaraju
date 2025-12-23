@@ -5,7 +5,7 @@ import Navbar from "./components/Navbar";
 import './App.css';
 import { BrowserRouter as Router } from 'react-router-dom';
 import HeroSection from "./components/HeroSection";
-import About from "./components/About";
+// import About from "./components/About";
 import Skills from "./components/Skills";
 import Projects from "./components/Projects";
 import Contact from "./components/Contact";
@@ -58,34 +58,28 @@ function App() {
           <Section delay="0.1s">
             <HeroSection />
           </Section>
-          
-          <Section delay="0.2s">
-            <Wrapper>
-              <About />
-            </Wrapper>
-          </Section>
 
-          <Section delay="0.3s">
+          <Section delay="0.2s">
             <Projects openModal={openModal} setOpenModal={setOpenModal} />
           </Section>
 
-          <Section delay="0.4s">
+          <Section delay="0.3s">
             <Wrapper>
               <Skills />
             </Wrapper>
           </Section>
 
-          <Section delay="0.5s">
+          <Section delay="0.4s">
             <Experience />
           </Section>
 
-          <Section delay="0.6s">
+          <Section delay="0.5s">
             <Wrapper>
               <Education />
             </Wrapper>
           </Section>
 
-          <Section delay="0.7s">
+          <Section delay="0.6s">
             <Contact />
           </Section>
 
