@@ -31,32 +31,32 @@ const HeroImage = styled.img`
   width: 100%;
   max-width: 220px;
   border-radius: 50%;
-  box-shadow: 0 10px 40px rgba(132, 59, 206, 0.4), 
-              0 0 0 8px rgba(132, 59, 206, 0.1);
-  border: 4px solid rgba(132, 59, 206, 0.3);
+  box-shadow: 0 10px 40px rgba(255, 69, 0, 0.4), 
+              0 0 0 8px rgba(255, 69, 0, 0.1);
+  border: 4px solid rgba(255, 69, 0, 0.3);
   transition: all 0.4s ease;
   object-fit: cover;
   aspect-ratio: 1/1;
 
   &:hover {
     transform: scale(1.05) translateY(-5px);
-    box-shadow: 0 15px 50px rgba(132, 59, 206, 0.6), 
-                0 0 0 12px rgba(132, 59, 206, 0.15);
-    border-color: rgba(132, 59, 206, 0.5);
+    box-shadow: 0 15px 50px rgba(255, 69, 0, 0.6), 
+                0 0 0 12px rgba(255, 69, 0, 0.15);
+    border-color: rgba(255, 69, 0, 0.5);
   }
 
   @media (max-width: 768px) {
     max-width: 180px;
-    box-shadow: 0 8px 30px rgba(132, 59, 206, 0.3), 
-                0 0 0 6px rgba(132, 59, 206, 0.1);
-    border: 3px solid rgba(132, 59, 206, 0.3);
+    box-shadow: 0 8px 30px rgba(255, 69, 0, 0.3), 
+                0 0 0 6px rgba(255, 69, 0, 0.1);
+    border: 3px solid rgba(255, 69, 0, 0.3);
   }
   
   @media (max-width: 480px) {
     max-width: 140px;
-    box-shadow: 0 6px 20px rgba(132, 59, 206, 0.3), 
-                0 0 0 4px rgba(132, 59, 206, 0.1);
-    border: 2px solid rgba(132, 59, 206, 0.3);
+    box-shadow: 0 6px 20px rgba(255, 69, 0, 0.3), 
+                0 0 0 4px rgba(255, 69, 0, 0.1);
+    border: 2px solid rgba(255, 69, 0, 0.3);
   }
 `;
 
