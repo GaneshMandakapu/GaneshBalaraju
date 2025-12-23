@@ -245,6 +245,28 @@ export const education = [
 export const projects = [
   {
     id: 0,
+    title: "Sweet Slider - Circular Cake Carousel",
+    date: "December 2024",
+    description: "A visually stunning circular cake carousel website with smooth animations, mobile-responsive design, and interactive navigation. Features include swipe gestures, keyboard controls, auto-play, and glassmorphism UI elements with rotating circular text.",
+    image: "https://sweet-slider.vercel.app/og-image.png", // You can update this with a screenshot
+    tags: ["React", "Vite", "Framer Motion", "CSS3", "Responsive Design"],
+    category: "web app",
+    github: "https://github.com/GaneshMandakapu/sweet-slider",
+    webapp: "https://sweet-slider.vercel.app/",
+  },
+  {
+    id: 1,
+    title: "Stranger Things - Interactive Website",
+    date: "December 2024",
+    description: "An immersive Stranger Things themed website with dynamic animations, character showcases, and engaging user interactions. Built with modern web technologies and deployed on Vercel for optimal performance.",
+    image: "https://stranger-things-henna.vercel.app/og-image.png", // You can update this with a screenshot
+    tags: ["React", "JavaScript", "CSS3", "Vercel", "Animation"],
+    category: "web app",
+    github: "https://github.com/GaneshMandakapu/StrangerThings",
+    webapp: "https://stranger-things-henna.vercel.app/",
+  },
+  {
+    id: 2,
     title: "Medical ChatBot LLM",
     date: "September 2024",
     description: "Developed an AI-driven web application with a Flask backend and React frontend, allowing users to interact with medical information. Integrated GitHub OAuth to fetch and visualize user repository data.",
@@ -255,7 +277,7 @@ export const projects = [
     webapp: "[Link to live app]", // Update this with the live app link
   },
   {
-    id: 1,
+    id: 3,
     title: "Visualization of Fludized Bed Dryer",
     date: "May 2024 – July 2024",
     description: "Designed application prototypes in Figma and developed them in Unity. Built the user interface for the project.",
@@ -266,7 +288,7 @@ export const projects = [
     webapp: "[Link to live app]", // Update this with the live app link
   },
   {
-    id: 2,
+    id: 4,
     title: "E-commerce Store",
     date: "June 2023 – Sept 2023",
     description: "Developed a full-stack e-commerce web application using Flask for the backend and React for the frontend. Implemented GitHub OAuth to retrieve data from user repositories.",
@@ -277,7 +299,7 @@ export const projects = [
     webapp: "[Link to live app]", // Update this with the live app link
   },
   {
-    id: 3,
+    id: 5,
     title: "Frequent Pattern Mining",
     date: "Oct 2023 – Jan 2023",
     description: "Developed a model to automatically determine the threshold for finding uncovered patterns. Collaborated with a PhD researcher to suggest features and get feedback on the method.",
