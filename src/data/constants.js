@@ -1,10 +1,10 @@
 export const Bio = {
   name: "Ganesh Balaraju",
   roles: [
-    "AI Developer",
     "Full Stack Developer",
+    "AI Developer",
     "iOS Developer",
-    "Programmer",
+    "Software Engineer",
   ],
   description:
     "A motivated Master's student in Digital Engineering with hands-on experience in full-stack web development, AI-driven solutions, and native iOS application development. Eager to leverage skills in Python, Swift, and modern web frameworks to tackle challenging problems and deliver high-quality results.",
