@@ -1,11 +1,11 @@
 import { ThemeProvider } from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { darkTheme, lightTheme } from './utils/Themes.js'
 import Navbar from "./components/Navbar";
 import './App.css';
 import { BrowserRouter as Router } from 'react-router-dom';
 import HeroSection from "./components/HeroSection";
-// import About from "./components/About";
+import About from "./components/About";
 import Skills from "./components/Skills";
 import Projects from "./components/Projects";
 import Contact from "./components/Contact";
@@ -19,6 +19,7 @@ const Body = styled.div`
   background-color: ${({ theme }) => theme.bg};
   width: 100%;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 `
 
 const Wrapper = styled.div`
@@ -26,26 +27,70 @@ const Wrapper = styled.div`
   width: 100%;
   clip-path: polygon(0 0, 100% 0, 100% 100%,30% 98%, 0 100%);
 `
+
+const Section = styled.div`
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.8s ease-out forwards;
+  animation-delay: ${({ delay }) => delay || '0s'};
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`
 function App() {
   const [darkMode, setDarkMode] = useState(true);
   const [openModal, setOpenModal] = useState({ state: false, project: null });
-  console.log(openModal)
+
+  // Smooth scroll behavior
+  useEffect(() => {
+    document.documentElement.style.scrollBehavior = 'smooth';
+  }, []);
+
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <Router >
         <Navbar />
         <Body>
-          <HeroSection />
-          <Wrapper>
-            <Skills />
+          <Section delay="0.1s">
+            <HeroSection />
+          </Section>
+          
+          <Section delay="0.2s">
+            <Wrapper>
+              <About />
+            </Wrapper>
+          </Section>
+
+          <Section delay="0.3s">
+            <Projects openModal={openModal} setOpenModal={setOpenModal} />
+          </Section>
+
+          <Section delay="0.4s">
+            <Wrapper>
+              <Skills />
+            </Wrapper>
+          </Section>
+
+          <Section delay="0.5s">
             <Experience />
-          </Wrapper>
-          <Projects openModal={openModal} setOpenModal={setOpenModal} />
-          <Wrapper>
-            <Education />
+          </Section>
+
+          <Section delay="0.6s">
+            <Wrapper>
+              <Education />
+            </Wrapper>
+          </Section>
+
+          <Section delay="0.7s">
             <Contact />
-          </Wrapper>
+          </Section>
+
           <Footer />
+          
           {openModal.state &&
             <ProjectDetails openModal={openModal} setOpenModal={setOpenModal} />
           }
