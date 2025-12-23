@@ -248,7 +248,7 @@ export const projects = [
     title: "Sweet Slider - Circular Cake Carousel",
     date: "December 2024",
     description: "A visually stunning circular cake carousel website with smooth animations, mobile-responsive design, and interactive navigation. Features include swipe gestures, keyboard controls, auto-play, and glassmorphism UI elements with rotating circular text.",
-    image: "https://sweet-slider.vercel.app/og-image.png", // You can update this with a screenshot
+    image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&h=500&fit=crop",
     tags: ["React", "Vite", "Framer Motion", "CSS3", "Responsive Design"],
     category: "web app",
     github: "https://github.com/GaneshMandakapu/sweet-slider",
@@ -259,7 +259,7 @@ export const projects = [
     title: "Stranger Things - Interactive Website",
     date: "December 2024",
     description: "An immersive Stranger Things themed website with dynamic animations, character showcases, and engaging user interactions. Built with modern web technologies and deployed on Vercel for optimal performance.",
-    image: "https://stranger-things-henna.vercel.app/og-image.png", // You can update this with a screenshot
+    image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&h=500&fit=crop",
     tags: ["React", "JavaScript", "CSS3", "Vercel", "Animation"],
     category: "web app",
     github: "https://github.com/GaneshMandakapu/StrangerThings",
@@ -270,7 +270,7 @@ export const projects = [
     title: "Medical ChatBot LLM",
     date: "September 2024",
     description: "Developed an AI-driven web application with a Flask backend and React frontend, allowing users to interact with medical information. Integrated GitHub OAuth to fetch and visualize user repository data.",
-    image: "[Path to your project image]", // Update this with a path to the image
+    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=500&fit=crop",
     tags: ["Python", "Flask", "React", "LLM", "AWS", "AI"],
     category: "web app",
     github: "[Link to GitHub repo]", // Update this with the repo link
@@ -281,7 +281,7 @@ export const projects = [
     title: "Visualization of Fludized Bed Dryer",
     date: "May 2024 – July 2024",
     description: "Designed application prototypes in Figma and developed them in Unity. Built the user interface for the project.",
-    image: "[Path to your project image]", // Update this with a path to the image
+    image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=500&fit=crop",
     tags: ["Unity3d", "Blender", "C#", "Figma", "UI Design"],
     category: "visualization",
     github: "[Link to GitHub repo]", // Update this with the repo link
@@ -292,7 +292,7 @@ export const projects = [
     title: "E-commerce Store",
     date: "June 2023 – Sept 2023",
     description: "Developed a full-stack e-commerce web application using Flask for the backend and React for the frontend. Implemented GitHub OAuth to retrieve data from user repositories.",
-    image: "[Path to your project image]", // Update this with a path to the image
+    image: "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&h=500&fit=crop",
     tags: ["Python", "Flask", "React", "Full-Stack"],
     category: "web app",
     github: "[Link to GitHub repo]", // Update this with the repo link
@@ -303,7 +303,7 @@ export const projects = [
     title: "Frequent Pattern Mining",
     date: "Oct 2023 – Jan 2023",
     description: "Developed a model to automatically determine the threshold for finding uncovered patterns. Collaborated with a PhD researcher to suggest features and get feedback on the method.",
-    image: "[Path to your project image]", // Update this with a path to the image
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=500&fit=crop",
     tags: ["Python", "SQL", "Git", "Data Mining"],
     category: "data science",
     github: "[Link to GitHub repo]", // Update this with the repo link
