@@ -1,5 +1,9 @@
-import styled from 'styled-components';
-import _default from '../../themes/default';
+import styled, { keyframes } from 'styled-components';
+
+const shine = keyframes`
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+`;
 
 export const Container = styled.div`
     background: transparent;
@@ -9,7 +13,7 @@ export const Container = styled.div`
     position: relative;
     z-index: 1;
     align-items: center;
-    clip-path: polygon(0 0, 100% 0, 100% 100%,100% 98%, 0 100%);
+    padding: 60px 20px;
 `;
 
 export const Wrapper = styled.div`
@@ -20,86 +24,99 @@ export const Wrapper = styled.div`
     flex-direction: column;
     width: 100%;
     max-width: 1350px;
-    padding: 40px 0;
-    gap: 12px;
-    @media (max-width: 960px) {
-        flex-direction: column;
+    gap: 20px;
+`;
+
+export const Title = styled.h2`
+    font-size: 48px;
+    text-align: center;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, #E50914 50%, #fff 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: ${shine} 4s linear infinite;
+    margin-bottom: 8px;
+    
+    @media (max-width: 768px) {
+        font-size: 36px;
     }
 `;
 
-export const Title = styled.div`
-font-size: 42px;
-text-align: center;
-font-weight: 600;
-margin-top: 20px;
-  color: ${({ theme }) => theme.text_primary};
-  @media (max-width: 768px) {
-      margin-top: 12px;
-      font-size: 32px;
-  }
-`;
-
-export const Desc = styled.div`
+export const Desc = styled.p`
     font-size: 18px;
     text-align: center;
     max-width: 600px;
     color: ${({ theme }) => theme.text_secondary};
+    line-height: 1.6;
+    
     @media (max-width: 768px) {
-        margin-top: 12px;
         font-size: 16px;
+        padding: 0 20px;
     }
 `;
 
 export const ToggleButtonGroup = styled.div`
     display: flex;
-    border: 1.5px solid ${({ theme }) => theme.primary};
-    color: ${({ theme }) => theme.primary};
-    font-size: 16px;
-    border-radius: 12px;
-    font-weight: 500;
-    margin: 22px 0px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 6px;
+    margin: 30px 0 20px;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+    
     @media (max-width: 768px) {
+        padding: 4px;
+        gap: 2px;
+    }
+`
+
+export const ToggleButton = styled.button`
+    padding: 12px 24px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    background: ${({ active }) => active ? 'linear-gradient(135deg, #E50914, #B81D24)' : 'transparent'};
+    color: ${({ active }) => active ? '#fff' : 'rgba(255, 255, 255, 0.6)'};
+    transition: all 0.3s ease;
+    box-shadow: ${({ active }) => active ? '0 4px 15px rgba(229, 9, 20, 0.3)' : 'none'};
+    
+    &:hover {
+        color: #fff;
+        background: ${({ active }) => active ? 'linear-gradient(135deg, #E50914, #B81D24)' : 'rgba(229, 9, 20, 0.1)'};
+    }
+    
+    @media (max-width: 768px) {
+        padding: 10px 16px;
         font-size: 12px;
     }
 `
 
-export const ToggleButton = styled.div`
-    padding: 8px 18px;
-    border-radius: 6px;
-    cursor: pointer;
-    ${({ active, theme }) =>
-        active && `
-    background: ${theme.primary + 20};
-    `
-    }
-    &:hover {
-        background: ${({ theme }) => theme.primary + 8};
-    }
-    @media (max-width: 768px) {
-        padding: 6px 8px;
-        border-radius: 4px;
-    }
-`
 export const Divider = styled.div`
-    width: 1.5px;
-    background: ${({ theme }) => theme.primary};
+    width: 1px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 4px;
+    
+    @media (max-width: 768px) {
+        display: none;
+    }
 `
-
 
 export const CardContainer = styled.div`
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: 28px;
+    align-items: stretch;
+    gap: 32px;
     flex-wrap: wrap;
-    // display: grid;
-    // grid-template-columns: repeat(3, 1fr);
-    // grid-gap: 32px;
-    // grid-auto-rows: minmax(100px, auto);
-    // @media (max-width: 960px) {
-    //     grid-template-columns: repeat(2, 1fr);
-    // }
-    // @media (max-width: 640px) {
-    //     grid-template-columns: repeat(1, 1fr);
-    // }
+    padding: 20px 0;
+    
+    @media (max-width: 768px) {
+        gap: 24px;
+    }
 `;

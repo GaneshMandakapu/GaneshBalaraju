@@ -8,7 +8,6 @@ import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import ExperienceCard from '../Cards/ExperienceCard';
 import { experiences } from '../../data/constants';
-import { GaneshBalaraju } from '../../data/constants';
 
 
 const Container = styled.div`

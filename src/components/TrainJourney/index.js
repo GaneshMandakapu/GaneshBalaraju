@@ -7,10 +7,8 @@ import { experiences, education } from '../../data/constants';
 gsap.registerPlugin(ScrollTrigger);
 
 const DB_RED = '#EC0016';
-const TRACK_COLOR = '#333';
-const RAIL_WIDTH = 40;
 const AMPLITUDE = 120; // How wide the zigzag is
-const ITEM_SPACING = 300; // Vertical space between stations
+const ITEM_SPACING = 450; // Vertical space between stations
 
 // ... (previous styled components)
 
@@ -166,9 +164,60 @@ const Card = styled.div`
     }
 `;
 
-const Year = styled.div` font-size: 14px; font-weight: 700; color: ${DB_RED}; margin-bottom: 8px; `;
-const Title = styled.h3` font-size: 18px; font-weight: 600; color: #fff; margin: 0 0 4px 0; `;
-const Sub = styled.p` font-size: 14px; color: #aaa; margin: 0; `;
+const Year = styled.div`
+    font-size: 12px;
+    font-weight: 700;
+    color: ${DB_RED};
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+`;
+
+const Title = styled.h3`
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+`;
+
+const Sub = styled.p`
+    font-size: 13px;
+    color: #aaa;
+    margin: 0 0 12px 0;
+`;
+
+const Description = styled.p`
+    font-size: 13px;
+    color: #ccc;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+    opacity: 0.9;
+`;
+
+const SkillsContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+`;
+
+const SkillTag = styled.span`
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, ${DB_RED}88, ${DB_RED}44);
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid ${DB_RED}66;
+`;
+
+const Grade = styled.div`
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+    font-style: italic;
+`;
 
 const parseYear = (dateStr) => {
     if (!dateStr) return 2023;
@@ -177,8 +226,27 @@ const parseYear = (dateStr) => {
 };
 
 const getMergedJourney = () => {
-    const exp = experiences.map(e => ({ ...e, category: 'work', year: parseYear(e.date), title: e.role, desc: e.company, location: e.location }));
-    const edu = education.map(e => ({ ...e, category: 'education', year: parseYear(e.date), title: e.degree, desc: e.school, location: e.location }));
+    const exp = experiences.map(e => ({
+        ...e,
+        category: 'work',
+        year: parseYear(e.date),
+        title: e.role,
+        subtitle: e.company,
+        fullDesc: e.desc,
+        location: e.location,
+        skills: e.skills || []
+    }));
+    const edu = education.map(e => ({
+        ...e,
+        category: 'education',
+        year: parseYear(e.date),
+        title: e.degree,
+        subtitle: e.school,
+        fullDesc: e.desc,
+        location: e.location,
+        grade: e.grade,
+        skills: []
+    }));
     return [...edu, ...exp].sort((a, b) => b.year - a.year);
 };
 
@@ -367,9 +435,21 @@ const TrainJourney = () => {
                     return (
                         <TimelineItem key={i} $isLeft={isLeft} className="timeline-item">
                             <Card className="timeline-card">
-                                <Year>{item.year}</Year>
+                                <Year>{item.date || item.year}</Year>
                                 <Title>{item.title}</Title>
-                                <Sub>{item.desc} {item.location && <span style={{ opacity: 0.8, fontWeight: 500 }}> • {item.location}</span>}</Sub>
+                                <Sub>
+                                    {item.subtitle}
+                                    {item.location && <span style={{ opacity: 0.8, fontWeight: 500 }}> • {item.location}</span>}
+                                </Sub>
+                                {item.grade && <Grade>{item.grade}</Grade>}
+                                {item.fullDesc && <Description>{item.fullDesc}</Description>}
+                                {item.skills && item.skills.length > 0 && (
+                                    <SkillsContainer>
+                                        {item.skills.map((skill, idx) => (
+                                            <SkillTag key={idx}>{skill}</SkillTag>
+                                        ))}
+                                    </SkillsContainer>
+                                )}
                             </Card>
                         </TimelineItem>
                     );
