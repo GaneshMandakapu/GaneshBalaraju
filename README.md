@@ -1,71 +1,76 @@
-# My Portfolio
+# Ganesh Balaraju — Portfolio
 
-Welcome to my portfolio! This project showcases my skills, projects, and experiences as a web developer.
+Personal portfolio site, positioned for **Revenue Operations Analyst** roles with
+frontend engineering as the supporting story. React + styled-components, with a
+GPU-shader background and scroll-driven animation.
 
-<!-- ### Weblink: [Live Website](https://rishavchanda.netlify.app)
-## Some Images:
-<img width="450px;" src="https://github.com/rishavchanda/rishav-chanda-portfolio/assets/64485885/4774dc30-1c1c-4c6c-b23b-019f3481713e"/>
-<img width="450px;" src="https://github.com/rishavchanda/rishav-chanda-portfolio/assets/64485885/0a33349f-262d-4720-afed-7afc0dfd85a5"/>
-<img width="450px;" src="https://github.com/rishavchanda/rishav-chanda-portfolio/assets/64485885/92f2622f-0a7f-444a-8f60-6edeae7508dd"/>
-<img width="450px;" src="https://github.com/rishavchanda/rishav-chanda-portfolio/assets/64485885/0e984e85-cbd9-487b-bf91-166009b39319"/>
-<img width="450px;" src="https://github.com/rishavchanda/rishav-chanda-portfolio/assets/64485885/6ad7b63b-4c51-4c98-bd21-847e5d48d559"/>
-<img width="450px;" src="https://github.com/rishavchanda/rishav-chanda-portfolio/assets/64485885/10647898-7154-434c-84e6-edee6679ca92"/> -->
+**Live:** https://ganeshbalaraju.github.io
 
-## Table of Contents
+## Running locally
 
-- [Introduction](#introduction)
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-<!-- - [Installation](#installation) -->
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+```bash
+npm install
+npm start        # dev server on :3000
+npm run build    # production build
+npm run deploy   # build + publish to GitHub Pages
+```
 
-## Introduction
+## Structure
 
-My Portfolio is a React.js application that serves as an online portfolio to showcase my work, skills, and achievements. It provides an overview of my background, displays my projects, and offers a way to contact me.
+```
+src/
+├── data/
+│   ├── constants.js     ← all site content lives here (single source of truth)
+│   └── icons.js         ← local icon registry, no CDN requests
+├── hooks/useReveal.js   ← IntersectionObserver scroll reveal
+└── components/
+    ├── shared/Section.js    shared section chrome
+    ├── WebGLBackground/     shader starfield (three.js)
+    ├── HeroSection/         hero + highlights strip
+    ├── Skills/              skills & tooling grid
+    ├── Projects/            filterable project grid
+    ├── TrainJourney/        experience, client delivery & education (GSAP)
+    ├── Credentials/         certifications, languages, volunteering
+    ├── Contact/             EmailJS contact form
+    └── Footer/
+```
 
-## Features
+### Editing content
 
-- About Me: An overview of my background, skills, and experiences.
-- Projects: A collection of my notable projects with descriptions, screenshots, and links.
-- Skills: A list of my technical skills and proficiencies.
-- Resume: A link to download my resume.
-- Contact: A form to send me messages or inquiries.
+Almost everything — bio, roles, skills, jobs, client delivery, education,
+projects, certifications, languages — is in
+[`src/data/constants.js`](src/data/constants.js). No component changes needed to
+update the site's content.
 
-## Technologies Used
+Two conventions worth knowing:
 
-- React.js: A JavaScript library for building user interfaces.
-- HTML5 & CSS3: Markup and styling languages for building web pages.
-- JavaScript: A programming language for adding interactivity to web applications.
-- Style-Components: A CSS framework for creating responsive and mobile-first designs.
-- Git: A version control system for tracking changes and collaborating on projects.
-- GitHub Pages: A platform for hosting and deploying web applications.
+- Projects with no public link set `github: null` / `webapp: null`; the card and
+  dialog hide the buttons rather than rendering a dead link. Add
+  `confidential: true` for internal production systems so the dialog says
+  "not publicly accessible" instead of "not hosted".
+- The journey timeline sorts on the **last** year in a date range, so ongoing
+  entries like `"Apr 2023 – Oct 2026 (expected)"` rank by when they finish, not
+  when they started. Salaried roles use `experiences`; consulting engagements
+  use `clientDelivery` and render with an amber badge.
 
-<!-- ## Installation
+## Performance notes
 
-To run this portfolio locally, follow these steps:
+Things worth preserving if you edit this:
 
-1. Clone the repository: `git clone https://github.com/rishavchanda/rishav-chanda-portfolio.git`
-2. Navigate to the project directory: `cd rishav-chanda-portfolio`
-3. Install the dependencies: `npm install`
-4. Start the development server: `npm start`
-5. Open your browser and visit: `http://localhost:3000` -->
+- **Background motion runs in the vertex shader**, driven by a single `uTime`
+  uniform. Don't move particle positions in JS — that re-uploads the whole
+  buffer to the GPU every frame.
+- **Only `transform` and `opacity` are animated.** Animating `box-shadow`,
+  `filter` or `backdrop-filter` forces a repaint each frame.
+- **No scroll listeners.** Scroll-driven state (nav background, back-to-top,
+  reveals, scroll spy) all uses `IntersectionObserver`.
+- **`scroll-behavior: smooth` is deliberately not set globally** — it fights
+  GSAP ScrollTrigger's scrub. Anchor clicks call `scrollIntoView` explicitly.
+- **Everything below the fold is `React.lazy`**, so three.js and GSAP stay out
+  of the initial bundle.
+- `prefers-reduced-motion` is honoured throughout.
 
-## Usage
+## Stack
 
-After installing and running the project locally, you can navigate through the different sections of the portfolio using the navigation menu. Explore the About Me section to learn more about my background and skills. Visit the Projects section to see detailed information about my projects, including descriptions and screenshots. Use the Contact section to send me a message or inquiry.
-
-## Contributing
-
-Contributions are welcome! If you'd like to contribute to My Portfolio, please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix: `git checkout -b my-feature`
-3. Commit your changes: `git commit -m 'Add some feature'`
-4. Push to the branch: `git push origin my-feature`
-5. Open a pull request.
-
-<!-- ## License
-
-This project is licensed under the [MIT License](LICENSE). -->
+React 18 · styled-components · three.js · GSAP ScrollTrigger · react-icons ·
+EmailJS · Create React App
