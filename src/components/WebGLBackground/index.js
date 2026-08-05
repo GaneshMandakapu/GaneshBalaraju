@@ -1,138 +1,248 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import styled from 'styled-components';
 
+/**
+ * Ambient starfield.
+ *
+ * All motion happens in the vertex shader from a single `uTime` uniform, so the
+ * per-frame CPU cost is one uniform write. The previous version walked 2000
+ * particles in JS every frame and re-uploaded the whole position buffer to the
+ * GPU (`needsUpdate = true`), which was the main source of scroll jank.
+ *
+ * The sprite is drawn analytically in the fragment shader — no texture fetch
+ * from an external CDN, so the background can't be broken by a third party.
+ */
+
 const Container = styled.div`
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: #000; /* Dark background for night train feel */
+  background: #000;
+  /* Fades in once the first frame has rendered, avoiding a black flash. */
+  opacity: 0;
+  transition: opacity 1.2s ease;
+
+  &[data-ready='true'] {
+    opacity: 1;
+  }
 `;
 
+const vertexShader = /* glsl */ `
+  uniform float uTime;
+  uniform float uSpeed;
+  uniform float uPixelRatio;
+  uniform float uDepth;
+
+  attribute float aSize;
+  attribute float aOffset;
+  attribute vec3 aColor;
+
+  varying vec3 vColor;
+  varying float vFade;
+
+  void main() {
+    vColor = aColor;
+
+    vec3 pos = position;
+
+    // Travel toward the camera and wrap around, all from uTime — mod() keeps
+    // the loop seamless without any CPU-side bookkeeping.
+    pos.z = mod(pos.z + uTime * uSpeed + aOffset, uDepth) - uDepth * 0.5;
+
+    // Gentle lateral drift so the field doesn't read as a rigid grid.
+    pos.x += sin(uTime * 0.08 + aOffset) * 12.0;
+    pos.y += cos(uTime * 0.06 + aOffset * 1.3) * 8.0;
+
+    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+
+    // Fade in as particles emerge from the far plane and out as they pass the
+    // camera, which hides both the spawn and despawn pops.
+    float dist = -mvPosition.z;
+    vFade = smoothstep(uDepth * 0.5, uDepth * 0.15, dist) * smoothstep(0.0, 150.0, dist);
+
+    gl_PointSize = aSize * uPixelRatio * (300.0 / max(dist, 1.0));
+    gl_Position = projectionMatrix * mvPosition;
+  }
+`;
+
+const fragmentShader = /* glsl */ `
+  varying vec3 vColor;
+  varying float vFade;
+
+  void main() {
+    // Radial falloff -> soft round sprite, replaces the CDN particle texture.
+    float d = length(gl_PointCoord - vec2(0.5));
+    if (d > 0.5) discard;
+
+    float alpha = smoothstep(0.5, 0.0, d);
+    alpha = pow(alpha, 1.6) * vFade;
+
+    gl_FragColor = vec4(vColor, alpha);
+  }
+`;
+
+const PARTICLE_COUNT = 1400;
+const DEPTH = 2200;
+
 const WebGLBackground = () => {
-    const containerRef = useRef(null);
+  const containerRef = useRef(null);
 
-    const config = useMemo(() => ({
-        particleCount: 2000,
-        speed: 8,
-        colors: ['#FFFFFF', '#E50914', '#B81D24'], // Red, Dark Red, White
-    }), []);
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-    useEffect(() => {
-        if (!containerRef.current) return;
-        const container = containerRef.current;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Scene
-        const scene = new THREE.Scene();
-        // Fog to hide the spawn point
-        scene.fog = new THREE.FogExp2(0x000000, 0.001);
+    // Bail out entirely if the device can't give us a context — the CSS
+    // background colour is a perfectly good fallback.
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        antialias: false, // Pointless for additive soft sprites, and costly.
+        powerPreference: 'high-performance',
+      });
+    } catch {
+      return;
+    }
 
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-        camera.position.z = 500;
-        camera.rotation.x = -Math.PI / 10;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, 1, 1, DEPTH);
+    camera.position.z = 400;
 
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.appendChild(renderer.domElement);
+    const dpr = Math.min(window.devicePixelRatio, 1.75);
+    renderer.setPixelRatio(dpr);
+    container.appendChild(renderer.domElement);
 
-        // --- Warp Particles (Passing Lights) ---
-        const geometry = new THREE.BufferGeometry();
-        const count = config.particleCount;
-        const positions = new Float32Array(count * 3);
-        const colors = new Float32Array(count * 3);
-        const sizes = new Float32Array(count);
+    // --- Geometry -----------------------------------------------------------
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(PARTICLE_COUNT * 3);
+    const colors = new Float32Array(PARTICLE_COUNT * 3);
+    const sizes = new Float32Array(PARTICLE_COUNT);
+    const offsets = new Float32Array(PARTICLE_COUNT);
 
-        for (let i = 0; i < count; i++) {
-            const i3 = i * 3;
-            // X: Wide spread
-            positions[i3] = (Math.random() - 0.5) * 2000;
+    const palette = [
+      new THREE.Color('#E50914'),
+      new THREE.Color('#B81D24'),
+      new THREE.Color('#FFFFFF'),
+      new THREE.Color('#FF6B6B'),
+    ];
 
-            // Z: Spread deep
-            positions[i3 + 2] = (Math.random() - 0.5) * 2000;
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const i3 = i * 3;
+      positions[i3] = (Math.random() - 0.5) * 2400;
+      positions[i3 + 1] = (Math.random() - 0.5) * 1600;
+      positions[i3 + 2] = Math.random() * DEPTH;
 
-            // Y: spread around
-            positions[i3 + 1] = (Math.random() - 0.5) * 1500;
+      // Weighted so white dominates and red reads as an accent.
+      const c = palette[Math.random() < 0.62 ? 2 : Math.floor(Math.random() * 2)];
+      colors[i3] = c.r;
+      colors[i3 + 1] = c.g;
+      colors[i3 + 2] = c.b;
 
-            const color = new THREE.Color(
-                config.colors[Math.floor(Math.random() * config.colors.length)]
-            );
-            colors[i3] = color.r;
-            colors[i3 + 1] = color.g;
-            colors[i3 + 2] = color.b;
+      sizes[i] = Math.random() * 2.2 + 0.6;
+      offsets[i] = Math.random() * DEPTH;
+    }
 
-            sizes[i] = Math.random() * 3;
-        }
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
+    geometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+    geometry.setAttribute('aOffset', new THREE.BufferAttribute(offsets, 1));
 
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uSpeed: { value: reduceMotion ? 0 : 28 },
+        uPixelRatio: { value: dpr },
+        uDepth: { value: DEPTH },
+      },
+      vertexShader,
+      fragmentShader,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
 
-        const material = new THREE.PointsMaterial({
-            size: 4,
-            vertexColors: true,
-            transparent: true,
-            opacity: 0.8,
-            map: new THREE.TextureLoader().load('https://assets.codepen.io/16327/particle.png'),
-            blending: THREE.AdditiveBlending,
-            depthWrite: false,
-        });
+    const points = new THREE.Points(geometry, material);
+    // The field is procedurally wrapped, so bounds-based culling is wrong.
+    points.frustumCulled = false;
+    scene.add(points);
 
-        const particles = new THREE.Points(geometry, material);
-        scene.add(particles);
+    // --- Sizing -------------------------------------------------------------
+    const resize = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    };
+    resize();
 
-        // Animation Loop
-        let animationId;
-        const animate = () => {
-            animationId = requestAnimationFrame(animate);
+    let resizeTimer;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(resize, 150);
+    };
+    window.addEventListener('resize', onResize);
 
-            // Move Particles
-            const positions = particles.geometry.attributes.position.array;
-            for (let i = 0; i < count; i++) {
-                const i3 = i * 3;
+    // --- Loop ---------------------------------------------------------------
+    const clock = new THREE.Clock();
+    let frameId;
+    let ready = false;
 
-                // Move towards camera (Camera is at +500)
-                positions[i3 + 2] += config.speed;
+    const render = () => {
+      frameId = requestAnimationFrame(render);
+      material.uniforms.uTime.value = clock.getElapsedTime();
+      renderer.render(scene, camera);
 
-                // Reset if past camera
-                if (positions[i3 + 2] > 600) {
-                    positions[i3 + 2] = -1200;
-                }
-            }
-            particles.geometry.attributes.position.needsUpdate = true;
+      if (!ready) {
+        ready = true;
+        container.dataset.ready = 'true';
+      }
+    };
 
-            renderer.render(scene, camera);
-        };
+    const start = () => {
+      if (frameId == null) {
+        clock.start();
+        render();
+      }
+    };
+    const stop = () => {
+      if (frameId != null) {
+        cancelAnimationFrame(frameId);
+        frameId = null;
+      }
+    };
 
-        animate();
+    // Don't burn battery animating a field nobody is looking at.
+    const onVisibility = () => (document.hidden ? stop() : start());
+    document.addEventListener('visibilitychange', onVisibility);
 
-        // Handlers
-        const handleResize = () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        };
-        window.addEventListener('resize', handleResize);
+    if (reduceMotion) {
+      // Draw one static frame and leave it there.
+      renderer.render(scene, camera);
+      container.dataset.ready = 'true';
+    } else {
+      start();
+    }
 
-        return () => {
-            cancelAnimationFrame(animationId);
-            window.removeEventListener('resize', handleResize);
-            // Cleanup
-            if (renderer.domElement && container) {
-                container.removeChild(renderer.domElement);
-            }
-            geometry.dispose();
-            material.dispose();
-            renderer.dispose();
-        }
+    return () => {
+      stop();
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', onResize);
+      document.removeEventListener('visibilitychange', onVisibility);
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+      if (renderer.domElement.parentNode === container) {
+        container.removeChild(renderer.domElement);
+      }
+    };
+  }, []);
 
-    }, [config]);
-
-    return <Container ref={containerRef} />;
+  return <Container ref={containerRef} aria-hidden="true" />;
 };
 
-export default WebGLBackground;
+export default React.memo(WebGLBackground);

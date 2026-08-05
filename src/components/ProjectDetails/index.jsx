@@ -1,239 +1,318 @@
-import { CloseRounded, GitHub, LinkedIn } from '@mui/icons-material';
-import { Modal } from '@mui/material';
-import React from 'react'
-import styled from 'styled-components'
+import React, { useEffect, useRef, useCallback } from 'react';
+import styled from 'styled-components';
+import { FiX, FiGithub, FiExternalLink } from 'react-icons/fi';
 
-const Container = styled.div`
-width: 100%;
-height: 100%;
-position: absolute;
-top: 0;
-left: 0;
-background-color: #000000a7;
-display: flex;
-align-items: top;
-justify-content: center;
-overflow-y: scroll;
-transition: all 0.5s ease;
-`;
+/**
+ * Project detail dialog.
+ *
+ * Hand-rolled rather than MUI's <Modal> so the site doesn't ship
+ * @mui/material + @emotion for one overlay. Keeps the parts that matter:
+ * Escape to close, scroll lock, focus moved into the dialog, and a click on the
+ * backdrop (but not the panel) dismissing it.
+ */
 
-const Wrapper = styled.div`
-max-width: 800px;
-width: 100%;
-border-radius: 16px;
-margin: 50px 12px;
-height: min-content;
-background-color: ${({ theme }) => theme.card};
-color: ${({ theme }) => theme.text_primary};
-padding: 20px;
-display: flex;
-flex-direction: column;
-position: relative;
-`;
+const Backdrop = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.78);
+  animation: fadeIn 0.2s ease;
 
-const Title = styled.div`
-  font-size: 28px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.text_primary};
-  margin: 8px 6px 0px 6px;
-  @media only screen and (max-width: 600px) {
-      font-size: 24px;
-      margin: 6px 6px 0px 6px;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
   }
 `;
 
-const Date = styled.div`
-    font-size: 16px;
-    margin: 2px 6px;
-    font-weight: 400;
-    color: ${({ theme }) => theme.text_secondary};
-    @media only screen and (max-width: 768px){
-        font-size: 12px;
+const Panel = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  max-height: 88vh;
+  overflow-y: auto;
+  border-radius: 18px;
+  background: #131317;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+  animation: panelIn 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  @keyframes panelIn {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.98);
     }
-`
+  }
 
+  @media (max-width: 640px) {
+    max-height: 92vh;
+    border-radius: 18px 18px 0 0;
+  }
 
-
-const Desc = styled.div`
-    font-size: 16px;
-    font-weight: 400;
-    color: ${({ theme }) => theme.text_primary};
-    margin: 8px 6px;
-    @media only screen and (max-width: 600px) {
-        font-size: 14px;
-        margin: 6px 6px;
-    }
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 `;
 
-const Image = styled.img`
-    width: 100%;
-    object-fit: cover;
-    border-radius: 12px;
-    margin-top: 30px;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.3);
+const CloseButton = styled.button`
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  transition: background 0.2s ease;
+
+  svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  &:hover {
+    background: rgba(229, 9, 20, 0.85);
+  }
 `;
 
-const Label = styled.div`
-    font-size: 20px;
-    font-weight: 600;
-    color: ${({ theme }) => theme.text_primary};
-    margin: 8px 6px;
-    @media only screen and (max-width: 600px) {
-        font-size: 16px;
-        margin: 8px 6px;
-    }
+const Cover = styled.img`
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+`;
+
+const Body = styled.div`
+  padding: 26px 28px 28px;
+
+  @media (max-width: 640px) {
+    padding: 22px 20px 24px;
+  }
+`;
+
+const Title = styled.h2`
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 3px;
+`;
+
+const Subtitle = styled.p`
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #e50914;
+  margin-bottom: 6px;
+`;
+
+const DateLabel = styled.p`
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 18px;
 `;
 
 const Tags = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    margin: 8px 0px;
-    @media only screen and (max-width: 600px) {
-        margin: 4px 0px;
-    }
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 18px;
 `;
 
-const Tag = styled.div`
-    font-size: 14px;
-    font-weight: 400;
-    color: ${({ theme }) => theme.primary};
-    margin: 4px;
-    padding: 4px 8px;
-    border-radius: 8px;
-    background-color: ${({ theme }) => theme.primary + 20};
-    @media only screen and (max-width: 600px) {
-        font-size: 12px;
-    }
+const Tag = styled.span`
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
 `;
 
-const Members = styled.div`
-    display: flex;
+const Desc = styled.p`
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.62);
+`;
+
+const Actions = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-top: 26px;
+
+  @media (max-width: 480px) {
     flex-direction: column;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin: 12px 6px;
-    @media only screen and (max-width: 600px) {
-        margin: 4px 6px;
-    }
+  }
 `;
 
-const Member = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 12px;
-`;
+const Action = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+  padding: 13px 22px;
+  border-radius: 999px;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
 
-const MemberImage = styled.img`
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 50%;
-    margin-bottom: 4px;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.3);
-    @media only screen and (max-width: 600px) {
-        width: 32px;
-        height: 32px;
-    }
-`;
+  svg {
+    width: 16px;
+    height: 16px;
+  }
 
-const MemberName = styled.div`
-    font-size: 16px;
-    font-weight: 500;
-    width: 200px;
-    color: ${({ theme }) => theme.text_primary};
-    @media only screen and (max-width: 600px) {
-        font-size: 14px;
-    }
-`;
+  ${({ $primary }) =>
+    $primary
+      ? `
+    color: #fff;
+    background: linear-gradient(135deg, #E50914, #B81D24);
+  `
+      : `
+    color: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+  `}
 
+  &:hover {
+    transform: translateY(-2px);
+  }
 
-const ButtonGroup = styled.div`
-    display: flex;
-    justify-content: flex-end;
-    margin: 12px 0px;
-    gap: 12px;
-`;
-
-const Button = styled.a`
-    width: 100%;
-    text-align: center;
-    font-size: 16px;
-    font-weight: 600;
-    color: ${({ theme }) => theme.text_primary};
-    padding: 12px 16px;
-    border-radius: 8px;
-    background-color: ${({ theme }) => theme.primary};
-    ${({ dull, theme }) => dull && `
-        background-color: ${theme.bgLight};
-        color: ${theme.text_secondary};
-        &:hover {
-            background-color: ${({ theme }) => theme.bg + 99};
-        }
-    `}
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.5s ease;
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
     &:hover {
-        background-color: ${({ theme }) => theme.primary + 99};
+      transform: none;
     }
-    @media only screen and (max-width: 600px) {
-        font-size: 12px;
-    }
+  }
 `;
 
+const Note = styled.p`
+  margin-top: 24px;
+  padding: 12px 15px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+`;
 
-const index = ({ openModal, setOpenModal }) => {
-    const project = openModal?.project;
-    return (
-        <Modal open={true} onClose={() => setOpenModal({ state: false, project: null })}>
-            <Container>
-                <Wrapper>
-                    <CloseRounded
-                        style={{
-                            position: "absolute",
-                            top: "10px",
-                            right: "20px",
-                            cursor: "pointer",
-                        }}
-                        onClick={() => setOpenModal({ state: false, project: null })}
-                    />
-                    <Image src={project?.image} />
-                    <Title>{project?.title}</Title>
-                    <Date>{project.date}</Date>
-                    <Tags>
-                        {project?.tags.map((tag) => (
-                            <Tag>{tag}</Tag>
-                        ))}
-                    </Tags>
-                    <Desc>{project?.description}</Desc>
-                    {project.member && (
-                        <>
-                            <Label>Members</Label>
-                            <Members>
-                                {project?.member.map((member) => (
-                                    <Member>
-                                        <MemberImage src={member.img} />
-                                        <MemberName>{member.name}</MemberName>
-                                        <a href={member.github} target="new" style={{textDecoration: 'none', color: 'inherit'}}>
-                                            <GitHub />
-                                        </a>
-                                        <a href={member.linkedin} target="new" style={{textDecoration: 'none', color: 'inherit'}}>
-                                            <LinkedIn />
-                                        </a>
-                                    </Member>
-                                ))}
-                            </Members>
-                        </>
-                    )}
-                    <ButtonGroup>
-                        <Button dull href={project?.github} target='new'>View Code</Button>
-                        <Button href={project?.webapp} target='new'>View Live App</Button>
-                    </ButtonGroup>
-                </Wrapper>
-            </Container>
+const ProjectDetails = ({ openModal, setOpenModal }) => {
+  const project = openModal?.project;
+  const panelRef = useRef(null);
 
-        </Modal>
-    )
-}
+  const close = useCallback(
+    () => setOpenModal({ state: false, project: null }),
+    [setOpenModal]
+  );
 
-export default index
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') close();
+    };
+    document.addEventListener('keydown', onKeyDown);
+
+    // Lock background scroll while the dialog is open, restoring whatever the
+    // page had before rather than assuming it was ''.
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    panelRef.current?.focus();
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previous;
+    };
+  }, [close]);
+
+  if (!project) return null;
+
+  const hasLinks = project.github || project.webapp;
+
+  return (
+    <Backdrop onClick={close} role="presentation">
+      <Panel
+        ref={panelRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label={project.title}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <CloseButton onClick={close} aria-label="Close">
+          <FiX aria-hidden="true" />
+        </CloseButton>
+
+        {project.image && <Cover src={project.image} alt="" />}
+
+        <Body>
+          <Title>{project.title}</Title>
+          {project.subtitle && <Subtitle>{project.subtitle}</Subtitle>}
+          <DateLabel>{project.date}</DateLabel>
+
+          {project.tags?.length > 0 && (
+            <Tags>
+              {project.tags.map((tag) => (
+                <Tag key={tag}>{tag}</Tag>
+              ))}
+            </Tags>
+          )}
+
+          <Desc>{project.description}</Desc>
+
+          {/* Both buttons used to render unconditionally, so projects with no
+              public link produced anchors pointing at "[Link to GitHub repo]". */}
+          {hasLinks ? (
+            <Actions>
+              {project.github && (
+                <Action href={project.github} target="_blank" rel="noopener noreferrer">
+                  <FiGithub aria-hidden="true" />
+                  View code
+                </Action>
+              )}
+              {project.webapp && (
+                <Action
+                  $primary
+                  href={project.webapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FiExternalLink aria-hidden="true" />
+                  View live
+                </Action>
+              )}
+            </Actions>
+          ) : (
+            <Note>
+              {project.confidential
+                ? 'Internal production system — not publicly accessible. Happy to walk through the architecture and trade-offs on request.'
+                : "This project isn't publicly hosted — happy to walk through the code on request."}
+            </Note>
+          )}
+        </Body>
+      </Panel>
+    </Backdrop>
+  );
+};
+
+export default ProjectDetails;

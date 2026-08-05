@@ -1,56 +1,107 @@
-import React from 'react'
-import { useState } from 'react'
-import { Container, Wrapper, Title, Desc, CardContainer, ToggleButtonGroup, ToggleButton } from './ProjectsStyle'
-import ProjectCard from '../Cards/ProjectCards'
-import { projects } from '../../data/constants'
+import React, { useMemo, useState } from 'react';
+import styled from 'styled-components';
+import ProjectCard from '../Cards/ProjectCards';
+import { projects } from '../../data/constants';
+import { Section, SectionTitle, SectionKicker, SectionLead } from '../shared/Section';
 
-const Projects = ({ openModal, setOpenModal }) => {
-  const [toggle, setToggle] = useState('all');
+const Filters = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 36px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 
-  // Get unique categories from projects
-  const categories = ['all', ...new Set(projects.map(p => p.category).filter(Boolean))];
+  @media (max-width: 560px) {
+    border-radius: 16px;
+  }
+`;
 
-  const filteredProjects = toggle === 'all'
-    ? projects
-    : projects.filter(item => item.category === toggle);
+const FilterButton = styled.button`
+  padding: 9px 20px;
+  border: none;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  color: ${({ $active }) => ($active ? '#fff' : 'rgba(255,255,255,0.55)')};
+  background: ${({ $active }) => ($active ? '#E50914' : 'transparent')};
+  transition: color 0.22s ease, background 0.22s ease;
+
+  &:hover {
+    color: #fff;
+  }
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 22px;
+  width: 100%;
+  max-width: 1100px;
+  margin-top: 40px;
+`;
+
+const LABELS = {
+  all: 'All',
+  revops: 'Revenue Ops',
+  data: 'Data & AI',
+  frontend: 'Frontend',
+};
+
+const Projects = ({ setOpenModal }) => {
+  const [filter, setFilter] = useState('all');
+
+  const categories = useMemo(
+    () => ['all', ...new Set(projects.map((p) => p.category).filter(Boolean))],
+    []
+  );
+
+  const visible = useMemo(
+    () => (filter === 'all' ? projects : projects.filter((p) => p.category === filter)),
+    [filter]
+  );
 
   return (
-    <Container id="projects">
-      <Wrapper>
-        <Title>Featured Projects</Title>
-        <Desc>
-          A showcase of my work spanning web applications, AI solutions, and mobile development.
-          Each project represents a unique challenge and learning experience.
-        </Desc>
-        <ToggleButtonGroup>
-          {categories.map((category, index) => (
-            <ToggleButton
-              key={index}
-              active={toggle === category}
-              onClick={() => setToggle(category)}
-            >
-              {category === 'all' ? '🎯 All' :
-                category === 'web app' ? '🌐 Web Apps' :
-                  category === 'android app' ? '📱 Mobile' :
-                    category === 'data science' ? '📊 Data Science' :
-                      category === 'visualization' ? '🎨 Visualization' :
-                        category.charAt(0).toUpperCase() + category.slice(1)}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
-        <CardContainer>
-          {filteredProjects.map((project, index) => (
-            <ProjectCard
-              key={project.id || index}
-              project={project}
-              openModal={openModal}
-              setOpenModal={setOpenModal}
-            />
-          ))}
-        </CardContainer>
-      </Wrapper>
-    </Container>
-  )
-}
+    <Section id="projects">
+      <SectionKicker>Selected work</SectionKicker>
+      <SectionTitle>Projects</SectionTitle>
+      <SectionLead>
+        Systems and interfaces I've built — from CRM integrations and pipeline
+        reporting to research models and frontend work.
+      </SectionLead>
 
-export default Projects
+      <Filters role="tablist" aria-label="Filter projects by category">
+        {categories.map((cat) => (
+          <FilterButton
+            key={cat}
+            role="tab"
+            aria-selected={filter === cat}
+            $active={filter === cat}
+            onClick={() => setFilter(cat)}
+          >
+            {LABELS[cat] || cat}
+          </FilterButton>
+        ))}
+      </Filters>
+
+      <Grid>
+        {visible.map((project, i) => (
+          /* Keyed by filter so cards remount and replay their reveal when the
+             category changes, instead of appearing already-faded-in. */
+          <ProjectCard
+            key={`${filter}-${project.id}`}
+            project={project}
+            index={i}
+            setOpenModal={setOpenModal}
+          />
+        ))}
+      </Grid>
+    </Section>
+  );
+};
+
+export default React.memo(Projects);

@@ -1,30 +1,59 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+/*
+ * Fonts are preconnected + loaded from index.html so they don't block CSS
+ * parsing. @import inside a stylesheet serialises the request behind this file,
+ * which delayed first text paint.
+ *
+ * Weight sets are also trimmed to what's actually used (was 100–900 for Inter,
+ * i.e. nine weights, when the design uses four).
+ */
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 html {
-  scroll-behavior: smooth;
-  background: #000000;
+  background: #000;
+  -webkit-text-size-adjust: 100%;
+  /*
+   * `scroll-behavior: smooth` is deliberately NOT set globally. It conflicts
+   * with GSAP ScrollTrigger's scrub in the experience section, producing the
+   * stuttering scroll the site had. Anchor navigation calls scrollIntoView()
+   * with an explicit behavior instead — see Navbar.
+   */
 }
 
 body {
-  margin: 0px !important;
-  padding: 0;
-  background: #000000;
   min-height: 100vh;
+  background: #000;
   overflow-x: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #fff;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Premium Scrollbar */
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font-family: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 80px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -32,182 +61,58 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #E50914 0%, #B81D24 100%);
+  background: #3a3a3a;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #ff1a25 0%, #E50914 100%);
+  background: #e50914;
 }
 
-/* Selection Color */
 ::selection {
-  background: rgba(229, 9, 20, 0.3);
+  background: rgba(229, 9, 20, 0.35);
   color: #fff;
 }
 
-/* Premium Text Gradient Animation */
-@keyframes gradientText {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+/* Visible keyboard focus, suppressed for mouse users. */
+:focus-visible {
+  outline: 2px solid #e50914;
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
-.gradient-text {
-  background: linear-gradient(90deg, #E50914, #ff6b6b, #E50914);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradientText 3s ease infinite;
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
-/* Glowing Effects */
-@keyframes glow {
-  0%, 100% { 
-    box-shadow: 0 0 20px rgba(229, 9, 20, 0.3), 
-                0 0 40px rgba(229, 9, 20, 0.1);
-  }
-  50% { 
-    box-shadow: 0 0 30px rgba(229, 9, 20, 0.5), 
-                0 0 60px rgba(229, 9, 20, 0.2);
-  }
-}
-
-/* Float Animation */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-/* Pulse Animation */
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.05); opacity: 0.8; }
-}
-
-/* Shimmer Effect */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-/* Fade In Up */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Slide In Left */
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* Slide In Right */
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* Premium Card Hover 3D Effect */
-.card-3d {
-  transition: all 0.3s ease;
-  transform-style: preserve-3d;
-}
-
-.card-3d:hover {
-  transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(-5px);
-}
-
-/* Glassmorphism Utilities */
-.glass {
-  background: rgba(20, 20, 20, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.glass-dark {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Section Dividers */
-.section-divider {
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.5), transparent);
-  margin: 60px 0;
-}
-
-/* Noise Texture Overlay */
-.noise-overlay {
-  position: fixed;
+/* Skip link for keyboard and screen-reader users. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
   top: 0;
+  z-index: 200;
+  padding: 12px 20px;
+  background: #e50914;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 0 0 8px 0;
+}
+
+.skip-link:focus {
   left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
-/* Marquee Animation for Skills */
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.marquee-container {
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.marquee-content {
-  display: inline-flex;
-  animation: marquee 30s linear infinite;
-}
-
-.marquee-content:hover {
-  animation-play-state: paused;
-}
-
-/* Custom Focus States */
-input:focus, textarea:focus, button:focus {
-  outline: 2px solid rgba(229, 9, 20, 0.5);
-  outline-offset: 2px;
-}
-
-/* Responsive Typography */
-@media (max-width: 768px) {
-  html {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  html {
-    font-size: 13px;
+/*
+ * Global safety net: anything that slipped through with a long or infinite
+ * animation is reduced to a single frame for users who ask for less motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
